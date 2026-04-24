@@ -1,0 +1,59 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Audio files
+*.mp3
+*.wav
+output_*.mp3
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Environment variables
+.env
+.env.local
+
+# Test files
+test_*.py
+
+# Documentation (optional - remove if you want to include)
+TECHNOLOGY_SUMMARY.txt
+TRANSLATION_QUALITY_GUIDE.txt
+FINAL_IMPROVEMENTS.txt
+ROMANIZED_IMPROVEMENT_SUMMARY.txt
+OFFLINE_README.txt
+USAGE_NOTES.txt
+FILES_TO_KEEP.txt
+PROJECT_REPORT.md
+PROJECT_REPORT_SHORT.md
+generate_pdf.py

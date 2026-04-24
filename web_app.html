@@ -1,0 +1,600 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multilingual Voice Assistant</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            position: relative;
+            overflow-x: hidden;
+        }
+        
+        body::before {
+            content: '';
+            position: absolute;
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(138, 43, 226, 0.3), transparent);
+            top: -250px;
+            right: -250px;
+            animation: float 8s ease-in-out infinite;
+        }
+        
+        body::after {
+            content: '';
+            position: absolute;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(30, 144, 255, 0.3), transparent);
+            bottom: -200px;
+            left: -200px;
+            animation: float 10s ease-in-out infinite reverse;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0); }
+            50% { transform: translate(30px, 30px); }
+        }
+        
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 24px;
+            box-shadow: 0 25px 80px rgba(0,0,0,0.4);
+            padding: 50px;
+            max-width: 700px;
+            width: 100%;
+            position: relative;
+            z-index: 1;
+        }
+        
+        h1 {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-align: center;
+            margin-bottom: 15px;
+            font-size: 2.5em;
+            font-weight: 800;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 35px;
+            font-size: 14px;
+        }
+        
+        .input-group {
+            margin-bottom: 25px;
+            position: relative;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 10px;
+            color: #333;
+            font-weight: 600;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        input[type="text"] {
+            width: 100%;
+            padding: 16px 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            font-size: 16px;
+            transition: all 0.3s;
+            background: white;
+        }
+        
+        input[type="text"]:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+        }
+        
+        select {
+            width: 100%;
+            padding: 14px 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            font-size: 15px;
+            transition: all 0.3s;
+            background: white;
+            cursor: pointer;
+        }
+        
+        select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.1);
+        }
+        
+        .button-group {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            margin-top: 30px;
+        }
+        
+        button {
+            padding: 16px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        button::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: translate(-50%, -50%);
+            transition: width 0.6s, height 0.6s;
+        }
+        
+        button:hover::before {
+            width: 300px;
+            height: 300px;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        }
+        
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        button:disabled:hover {
+            box-shadow: none;
+        }
+        
+        button:disabled::before {
+            display: none;
+        }
+        
+        .btn-clear {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            grid-column: span 2;
+        }
+        
+        .output {
+            margin-top: 35px;
+            padding: 25px;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            border-radius: 16px;
+            display: none;
+            animation: slideIn 0.4s ease-out;
+        }
+        
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .output.show {
+            display: block;
+        }
+        
+        .output-item {
+            margin-bottom: 20px;
+            padding: 15px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        
+        .output-item:last-child {
+            margin-bottom: 0;
+        }
+        
+        .output-label {
+            font-weight: 700;
+            color: #667eea;
+            margin-bottom: 8px;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .output-text {
+            color: #333;
+            font-size: 20px;
+            line-height: 1.6;
+            font-weight: 500;
+        }
+        
+        audio {
+            width: 100%;
+            margin-top: 15px;
+            border-radius: 8px;
+        }
+        
+        .loading {
+            text-align: center;
+            color: #667eea;
+            margin-top: 25px;
+            display: none;
+            font-size: 16px;
+        }
+        
+        .loading.show {
+            display: block;
+        }
+        
+        .spinner {
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .error {
+            background: linear-gradient(135deg, #ff6b6b, #ee5a6f);
+            color: white;
+            padding: 18px;
+            border-radius: 12px;
+            margin-top: 20px;
+            display: none;
+            font-weight: 500;
+        }
+        
+        .error.show {
+            display: block;
+            animation: shake 0.5s;
+        }
+        
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+        
+        .info {
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            color: #333;
+            padding: 15px 20px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            font-size: 13px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .history {
+            margin-top: 30px;
+            max-height: 200px;
+            overflow-y: auto;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: 12px;
+            display: none;
+        }
+        
+        .history.show {
+            display: block;
+        }
+        
+        .history-item {
+            padding: 10px;
+            margin-bottom: 8px;
+            background: white;
+            border-radius: 8px;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .history-item:hover {
+            background: #f0f0f0;
+            transform: translateX(5px);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🌍 Voice Translator</h1>
+        <div class="subtitle">Speak any language, instantly</div>
+        
+        <div class="info">
+            ℹ️ Type text in any language (native or romanized). Auto-detects, translates, and speaks with ElevenLabs quality!
+        </div>
+        
+        <div class="input-group">
+            <label for="userText">✍️ Your Text</label>
+            <input type="text" id="userText" placeholder="Type anything... e.g., 'Namaste duniya' or 'こんにちは'" autofocus>
+        </div>
+        
+        <div class="input-group">
+            <label for="targetLang">🎯 Translate To</label>
+            <select id="targetLang">
+                <option value="en">🇬🇧 English</option>
+                <option value="es">🇪🇸 Spanish</option>
+                <option value="fr">🇫🇷 French</option>
+                <option value="de">🇩🇪 German</option>
+                <option value="it">🇮🇹 Italian</option>
+                <option value="pt">🇵🇹 Portuguese</option>
+                <option value="hi">🇮🇳 Hindi</option>
+                <option value="ta">🇮🇳 Tamil</option>
+                <option value="ja">🇯🇵 Japanese</option>
+                <option value="ko">🇰🇷 Korean</option>
+                <option value="zh-cn">🇨🇳 Chinese</option>
+                <option value="ar">🇸🇦 Arabic</option>
+                <option value="ru">🇷🇺 Russian</option>
+                <option value="tr">🇹🇷 Turkish</option>
+            </select>
+        </div>
+        
+        <div class="input-group">
+            <label for="voiceSelect">🎤 Voice</label>
+            <select id="voiceSelect">
+                <option value="">Loading voices...</option>
+            </select>
+        </div>
+        
+        <div class="button-group">
+            <button id="translateBtn" onclick="translateText()">
+                <span style="position: relative; z-index: 1;">🚀 Translate & Speak</span>
+            </button>
+            <button class="btn-clear" onclick="clearAll()">
+                <span style="position: relative; z-index: 1;">🗑️ Clear</span>
+            </button>
+        </div>
+        
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p>Translating & generating audio...</p>
+        </div>
+        
+        <div class="error" id="error"></div>
+        
+        <div class="output" id="output">
+            <div class="output-item">
+                <div class="output-label">🔍 Detected Language</div>
+                <div class="output-text" id="detectedLang"></div>
+            </div>
+            
+            <div class="output-item" id="romanizedSection" style="display: none;">
+                <div class="output-label">📝 Original Input</div>
+                <div class="output-text" id="romanized"></div>
+            </div>
+            
+            <div class="output-item">
+                <div class="output-label" id="translationLabel">🌐 Translation</div>
+                <div class="output-text" id="translated"></div>
+            </div>
+            
+            <div class="output-item">
+                <div class="output-label">🔊 Audio</div>
+                <audio id="audioPlayer" controls></audio>
+            </div>
+        </div>
+        
+        <div class="history" id="history">
+            <div style="font-weight: 600; margin-bottom: 10px; color: #667eea;">📜 Recent Translations</div>
+        </div>
+    </div>
+    
+    <script>
+        const API_URL = 'http://localhost:5000';
+        
+        const langNames = {
+            "en": "English", "ta": "Tamil", "hi": "Hindi", "es": "Spanish",
+            "fr": "French", "ja": "Japanese", "ar": "Arabic", "zh-cn": "Chinese",
+            "zh-CN": "Chinese", "ko": "Korean", "de": "German", "it": "Italian",
+            "pt": "Portuguese", "ru": "Russian", "tr": "Turkish"
+        };
+        
+        let translationHistory = [];
+        
+        async function loadVoices() {
+            try {
+                const response = await fetch(`${API_URL}/voices`);
+                const data = await response.json();
+                
+                const voiceSelect = document.getElementById('voiceSelect');
+                voiceSelect.innerHTML = '';
+                
+                data.voices.forEach(voice => {
+                    const option = document.createElement('option');
+                    option.value = voice.voice_id;
+                    option.textContent = voice.name;
+                    voiceSelect.appendChild(option);
+                });
+            } catch (error) {
+                console.error('Error loading voices:', error);
+                showError('Could not connect to backend. Make sure to run: python web_backend.py');
+            }
+        }
+        
+        async function translateText() {
+            const userText = document.getElementById('userText').value.trim();
+            const targetLang = document.getElementById('targetLang').value;
+            const voiceId = document.getElementById('voiceSelect').value;
+            
+            if (!userText) {
+                showError('Please enter some text');
+                return;
+            }
+            
+            const loading = document.getElementById('loading');
+            const output = document.getElementById('output');
+            const errorDiv = document.getElementById('error');
+            const translateBtn = document.getElementById('translateBtn');
+            
+            loading.classList.add('show');
+            output.classList.remove('show');
+            errorDiv.classList.remove('show');
+            translateBtn.disabled = true;
+            
+            try {
+                const response = await fetch(`${API_URL}/translate`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        text: userText,
+                        target_lang: targetLang,
+                        voice_id: voiceId
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.error) {
+                    showError('Error: ' + data.error);
+                    return;
+                }
+                
+                // Display results
+                const detectedText = data.detected_language + (data.is_romanized ? ' (romanized)' : '');
+                document.getElementById('detectedLang').textContent = detectedText;
+                
+                const targetLangSelect = document.getElementById('targetLang');
+                const targetLangText = targetLangSelect.options[targetLangSelect.selectedIndex].text;
+                document.getElementById('translationLabel').textContent = `🌐 Translated to ${data.target_language}`;
+                document.getElementById('translated').textContent = data.translated;
+                
+                if (data.is_romanized && userText !== data.translated) {
+                    document.getElementById('romanizedSection').style.display = 'block';
+                    document.getElementById('romanized').textContent = data.original;
+                } else {
+                    document.getElementById('romanizedSection').style.display = 'none';
+                }
+                
+                // Load and play audio
+                const audioPlayer = document.getElementById('audioPlayer');
+                audioPlayer.src = `${API_URL}/audio/${data.audio_file}?t=${Date.now()}`;
+                audioPlayer.play();
+                
+                output.classList.add('show');
+                
+                // Add to history
+                addToHistory(userText, data.translated, data.detected_language, data.target_language);
+                
+            } catch (error) {
+                showError('Could not connect to backend. Run: python web_backend.py');
+            } finally {
+                loading.classList.remove('show');
+                translateBtn.disabled = false;
+            }
+        }
+        
+        function clearAll() {
+            document.getElementById('userText').value = '';
+            document.getElementById('output').classList.remove('show');
+            document.getElementById('error').classList.remove('show');
+            document.getElementById('userText').focus();
+        }
+        
+        function addToHistory(original, translated, fromLang, toLang) {
+            translationHistory.unshift({
+                original, translated, fromLang, toLang, time: new Date()
+            });
+            
+            if (translationHistory.length > 5) {
+                translationHistory.pop();
+            }
+            
+            updateHistoryDisplay();
+        }
+        
+        function updateHistoryDisplay() {
+            const historyDiv = document.getElementById('history');
+            
+            if (translationHistory.length === 0) {
+                historyDiv.classList.remove('show');
+                return;
+            }
+            
+            historyDiv.classList.add('show');
+            historyDiv.innerHTML = '<div style="font-weight: 600; margin-bottom: 10px; color: #667eea;">📜 Recent Translations</div>';
+            
+            translationHistory.forEach((item) => {
+                const historyItem = document.createElement('div');
+                historyItem.className = 'history-item';
+                historyItem.innerHTML = `
+                    <div style="color: #667eea; font-weight: 600; font-size: 11px; margin-bottom: 4px;">
+                        ${item.fromLang} → ${item.toLang}
+                    </div>
+                    <div style="color: #666;">${item.original}</div>
+                    <div style="color: #333; font-weight: 500;">→ ${item.translated}</div>
+                `;
+                historyItem.onclick = () => {
+                    document.getElementById('userText').value = item.original;
+                };
+                historyDiv.appendChild(historyItem);
+            });
+        }
+        
+        function showError(message) {
+            const errorDiv = document.getElementById('error');
+            errorDiv.textContent = '⚠️ ' + message;
+            errorDiv.classList.add('show');
+            setTimeout(() => errorDiv.classList.remove('show'), 5000);
+        }
+        
+        // Load voices when page loads
+        loadVoices();
+        
+        // Allow Enter key to submit
+        document.getElementById('userText').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                translateText();
+            }
+        });
+        
+        // Clear error on input
+        document.getElementById('userText').addEventListener('input', function() {
+            document.getElementById('error').classList.remove('show');
+        });
+    </script>
+</body>
+</html>
