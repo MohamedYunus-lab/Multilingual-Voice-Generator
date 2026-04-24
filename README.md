@@ -28,8 +28,8 @@ An advanced text-to-speech system that converts written text into natural-soundi
 
 1. Clone the repository:
 ```bash
-git clone https://github.com/YOUR_USERNAME/multilingual-voice-generator.git
-cd multilingual-voice-generator
+git clone https://github.com/MohamedYunus-lab/Multilingual-Voice-Generator.git
+cd Multilingual-Voice-Generator
 ```
 
 2. Install dependencies:
@@ -195,9 +195,10 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 📧 Contact
 
-Your Name - [Your Email]
+MOHAMED YUNUS ALI F - [yunusalimohamed734@gmail.com]
 
-Project Link: [https://github.com/YOUR_USERNAME/multilingual-voice-generator](https://github.com/YOUR_USERNAME/multilingual-voice-generator)
+Project Link: [https://github.com/MohamedYunus-lab/Multilingual-Voice-Generator]
+(https://github.com/MohamedYunus-lab/Multilingual-Voice-Generator)
 
 ## ⭐ Star History
 
